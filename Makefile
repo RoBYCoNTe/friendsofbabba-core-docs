@@ -25,7 +25,7 @@ QUEUE_VERSIONS = 0.x
 FOB_VERSIONS = 1.0.0
 
 help:
-	@echo "CakePHP API Documentation generator"
+	@echo "FriendsOfBabba/Core Documentation generator"
 	@echo "-----------------------------------"
 	@echo ""
 	@echo "Tasks:"
@@ -66,61 +66,6 @@ composer.phar:
 install: composer.phar
 	$(PHP8) $(COMPOSER) install
 
-define cakephp
-build-cakephp-$(VERSION): install
-	cd $(CAKEPHP_SOURCE_DIR) && git checkout -f $(TAG)
-	cd $(CAKEPHP_SOURCE_DIR) && $(PHP7) $(COMPOSER) update
-	mkdir -p $(BUILD_DIR)/cakephp/$(VERSION)
-	cp -r static/assets/* $(BUILD_DIR)/cakephp/$(VERSION)
-
-	$(PHP8) bin/apitool.php generate --config cakephp --version $(VERSION) \
-		$(CAKEPHP_SOURCE_DIR) $(BUILD_DIR)/cakephp/$(VERSION)
-endef
-
-define cakephp5
-build-cakephp5-$(VERSION): install
-	cd $(CAKEPHP_SOURCE_DIR) && git checkout -f $(TAG)
-	cd $(CAKEPHP_SOURCE_DIR) && $(PHP8) $(COMPOSER) update
-	mkdir -p $(BUILD_DIR)/cakephp/$(VERSION)
-	cp -r static/assets/* $(BUILD_DIR)/cakephp/$(VERSION)
-
-	$(PHP8) bin/apitool.php generate --config cakephp --version $(VERSION) \
-		$(CAKEPHP_SOURCE_DIR) $(BUILD_DIR)/cakephp/$(VERSION)
-endef
-
-define chronos
-build-chronos-$(VERSION): install
-	cd $(CHRONOS_SOURCE_DIR) && git checkout -f $(TAG)
-	cd $(CHRONOS_SOURCE_DIR) && $(PHP7) $(COMPOSER) update
-	mkdir -p $(BUILD_DIR)/chronos/$(VERSION)
-	cp -r static/assets/* $(BUILD_DIR)/chronos/$(VERSION)
-
-	php bin/apitool.php generate --config chronos --version $(VERSION) \
-		$(CHRONOS_SOURCE_DIR) $(BUILD_DIR)/chronos/$(VERSION)
-endef
-
-define elastic
-build-elastic-$(VERSION): install
-	cd $(ELASTIC_SOURCE_DIR) && git checkout -f $(TAG)
-	cd $(ELASTIC_SOURCE_DIR) && $(PHP7) $(COMPOSER) update
-	mkdir -p $(BUILD_DIR)/elastic-search/$(VERSION)
-	cp -r static/assets/* $(BUILD_DIR)/elastic-search/$(VERSION)
-
-	$(PHP8) bin/apitool.php generate --config elastic --version $(VERSION) \
-		$(ELASTIC_SOURCE_DIR) $(BUILD_DIR)/elastic-search/$(VERSION)
-endef
-
-define queue
-build-queue-$(VERSION): install
-	cd $(QUEUE_SOURCE_DIR) && git checkout -f $(TAG)
-	cd $(QUEUE_SOURCE_DIR) && $(PHP7) $(COMPOSER) update
-	mkdir -p $(BUILD_DIR)/queue/$(VERSION)
-	cp -r static/assets/* $(BUILD_DIR)/queue/$(VERSION)
-
-	$(PHP8) bin/apitool.php generate --config queue --version $(VERSION) \
-		$(QUEUE_SOURCE_DIR) $(BUILD_DIR)/queue/$(VERSION)
-endef
-
 define fob
 build-fob-$(VERSION): install
 	cd $(FOB_SOURCE_DIR) && git checkout -f $(TAG)
@@ -135,66 +80,6 @@ endef
 # Build all the versions in a loop.
 # build-all: $(foreach version, $(CAKEPHP_VERSIONS), build-cakephp-$(version)) $(foreach version, $(CHRONOS_VERSIONS), build-chronos-$(version)) $(foreach version, $(ELASTIC_VERSIONS), build-elastic-$(version)) $(foreach version, $(QUEUE_VERSIONS), build-queue-$(version)) $(foreach version, $(FOB_VERSIONS), build-fob-$(version))
 build-all: $(foreach version, $(FOB_VERSIONS), build-fob-$(version))
-
-# Generate build targets for cakephp
-TAG:=3.8.13
-VERSION:=3.8
-$(eval $(cakephp))
-
-TAG:=3.9.10
-VERSION:=3.9
-$(eval $(cakephp))
-
-TAG:=origin/3.x
-VERSION:=3.10
-$(eval $(cakephp))
-
-TAG:=4.0.9
-VERSION:=4.0
-$(eval $(cakephp))
-
-TAG:=4.1.7
-VERSION:=4.1
-$(eval $(cakephp))
-
-TAG:=4.2.10
-VERSION:=4.2
-$(eval $(cakephp))
-
-TAG:=origin/4.x
-VERSION:=4.3
-$(eval $(cakephp))
-
-TAG:=origin/4.next
-VERSION:=4.next
-$(eval $(cakephp))
-
-TAG:=origin/5.x
-VERSION:=5.0
-$(eval $(cakephp5))
-
-# Generate build targets for chronos
-TAG:=origin/1.x
-VERSION:=1.x
-$(eval $(chronos))
-
-TAG:=origin/2.x
-VERSION:=2.x
-$(eval $(chronos))
-
-# Generate build targets for elastic-search
-TAG:=origin/2.x
-VERSION:=2.x
-$(eval $(elastic))
-
-TAG:=origin/3.x
-VERSION:=3.x
-$(eval $(elastic))
-
-# Generate build targets for queue
-TAG:=origin/master
-VERSION:=0.x
-$(eval $(queue))
 
 # Generate build targets for fob
 TAG:=origin/main
