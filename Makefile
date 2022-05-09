@@ -22,6 +22,8 @@ ELASTIC_VERSIONS = 2.x 3.x
 
 QUEUE_VERSIONS = 0.x
 
+FOB_VERSIONS = 1.0.0
+
 help:
 	@echo "CakePHP API Documentation generator"
 	@echo "-----------------------------------"
@@ -119,8 +121,20 @@ build-queue-$(VERSION): install
 		$(QUEUE_SOURCE_DIR) $(BUILD_DIR)/queue/$(VERSION)
 endef
 
+define fob
+build-fob-$(VERSION): install
+	cd $(FOB_SOURCE_DIR) && git checkout -f $(TAG)
+	cd $(FOB_SOURCE_DIR) && $(PHP7) $(COMPOSER) update
+	mkdir -p $(BUILD_DIR)/fob/$(VERSION)
+	cp -r static/assets/* $(BUILD_DIR)/fob/$(VERSION)
+
+	$(PHP8) bin/apitool.php generate --config fob --version $(VERSION) \
+		$(FOB_SOURCE_DIR) $(BUILD_DIR)/fob/$(VERSION)
+endef
+
 # Build all the versions in a loop.
-build-all: $(foreach version, $(CAKEPHP_VERSIONS), build-cakephp-$(version)) $(foreach version, $(CHRONOS_VERSIONS), build-chronos-$(version)) $(foreach version, $(ELASTIC_VERSIONS), build-elastic-$(version)) $(foreach version, $(QUEUE_VERSIONS), build-queue-$(version))
+# build-all: $(foreach version, $(CAKEPHP_VERSIONS), build-cakephp-$(version)) $(foreach version, $(CHRONOS_VERSIONS), build-chronos-$(version)) $(foreach version, $(ELASTIC_VERSIONS), build-elastic-$(version)) $(foreach version, $(QUEUE_VERSIONS), build-queue-$(version)) $(foreach version, $(FOB_VERSIONS), build-fob-$(version))
+build-all: $(foreach version, $(FOB_VERSIONS), build-fob-$(version))
 
 # Generate build targets for cakephp
 TAG:=3.8.13
@@ -181,3 +195,8 @@ $(eval $(elastic))
 TAG:=origin/master
 VERSION:=0.x
 $(eval $(queue))
+
+# Generate build targets for fob
+TAG:=origin/main
+VERSION:=1.0.0
+$(eval $(fob))

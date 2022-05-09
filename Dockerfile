@@ -23,6 +23,11 @@ RUN apk add --no-cache \
     php8-xml \
     php8-xmlwriter \
     php8-zip \
+    php8-fileinfo \
+    php8-intl \
+    php8-gd \
+    php8-iconv \
+    php8-xmlreader \
     php7 \
     php7-bz2 \
     php7-curl \
@@ -36,7 +41,12 @@ RUN apk add --no-cache \
     php7-tokenizer \
     php7-xml \
     php7-xmlwriter \
-    php7-zip
+    php7-zip \
+    php7-fileinfo \
+    php7-intl \
+    php7-gd \
+    php7-iconv \
+    php7-xmlreader
 
 RUN ln -sf /usr/bin/php8 /usr/bin/php
 
@@ -45,18 +55,13 @@ RUN mkdir /website /root/.ssh
 RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 ARG GIT_COMMIT=master
-
 ENV GIT_COMMIT ${GIT_COMMIT}
 WORKDIR /data
 COPY . /data
 
-RUN git clone https://github.com/cakephp/cakephp.git /cakephp \
-  && git clone https://github.com/cakephp/chronos.git /chronos \
-  && git clone https://github.com/cakephp/elastic-search.git /elastic \
-  && git clone https://github.com/cakephp/queue.git /queue
-
+RUN git clone https://github.com/RoBYCoNTe/friendsofbabba-core.git /friendsofbabba-core
 RUN ls -lah \
-  && make clean build-all CAKEPHP_SOURCE_DIR=/cakephp CHRONOS_SOURCE_DIR=/chronos ELASTIC_SOURCE_DIR=/elastic QUEUE_SOURCE_DIR=/queue \
+  && make clean build-all FOB_SOURCE_DIR=/friendsofbabba-core \
   && make deploy DEPLOY_DIR=/var/www/html
 
 RUN mkdir -p /run/nginx \
